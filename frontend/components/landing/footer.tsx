@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { COMPANY_NAME } from "@/lib/constants";
-import { Package2 } from "lucide-react";
+import { SupplyGuardLogo } from "@/components/ui/logo";
 
 const footerLinks = {
   Product: [
@@ -31,32 +31,29 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="border-t bg-background">
-      <div className="max-w-6xl mx-auto px-6 py-16">
-        <div className="grid md:grid-cols-5 gap-8 mb-12">
+    <footer className="border-t border-white/5 bg-transparent backdrop-blur-sm relative z-10 w-full">
+      <div className="max-w-7xl mx-auto px-6 py-24">
+        <div className="grid md:grid-cols-6 gap-12 mb-20 text-left">
           {/* Branding */}
-          <div className="md:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                <Package2 className="h-5 w-5" />
-              </div>
-              <span className="font-semibold">{COMPANY_NAME}</span>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Supply chain risk simulation and mitigation platform for enterprises.
+          <div className="md:col-span-2">
+            <Link href="/" className="inline-block mb-8">
+              <SupplyGuardLogo imageClassName="h-32 w-32" />
+            </Link>
+            <p className="text-sm text-muted-foreground/60 leading-relaxed max-w-sm">
+              Architecting the future of supply chain resilience through neural orchestration and autonomous risk mitigation.
             </p>
           </div>
 
           {/* Links */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h3 className="font-semibold mb-4">{category}</h3>
-              <ul className="space-y-3">
+              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-6">{category}</h3>
+              <ul className="space-y-4">
                 {links.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      className="text-sm text-muted-foreground/40 hover:text-white transition-all duration-300"
                     >
                       {link.label}
                     </Link>
@@ -68,20 +65,16 @@ export function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="border-t pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-muted-foreground">
+        <div className="border-t border-white/5 pt-12 flex flex-col md:flex-row justify-between items-center gap-8">
+          <p className="text-xs font-bold text-muted-foreground/20 uppercase tracking-widest">
             © {new Date().getFullYear()} {COMPANY_NAME}. All rights reserved.
           </p>
-          <div className="flex gap-6">
-            <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Twitter
-            </Link>
-            <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              LinkedIn
-            </Link>
-            <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              GitHub
-            </Link>
+          <div className="flex gap-8">
+            {["Twitter", "LinkedIn", "GitHub"].map((platform) => (
+              <Link key={platform} href="#" className="text-xs font-bold text-muted-foreground/20 hover:text-white transition-colors tracking-widest uppercase">
+                {platform}
+              </Link>
+            ))}
           </div>
         </div>
       </div>

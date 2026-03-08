@@ -64,4 +64,4 @@ export const PRODUCT_CATEGORIES = [
 ];
 
 export const COMPANY_NAME = "SupplyGuard";
-export const COMPANY_TAGLINE = "Real-time Supply Chain Risk Simulation & Mitigation";
+export const COMPANY_TAGLINE = "Neural Orchestration";

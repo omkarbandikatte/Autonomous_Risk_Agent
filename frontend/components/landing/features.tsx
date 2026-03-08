@@ -1,64 +1,124 @@
-import { Zap, AlertTriangle, TrendingUp, Network, BarChart3, Shield } from "lucide-react";
+"use client";
+
+import { Cpu, Globe, Database, Fingerprint, Network, ShieldCheck } from "lucide-react";
+import { motion } from "framer-motion";
 
 const features = [
   {
-    icon: Zap,
-    title: "Real-Time Simulation",
-    description: "Trigger disruption events and instantly see cascading failures across your supply chain network.",
+    icon: Cpu,
+    title: "Neural Real-Time Core",
+    description: "Multi-modal orchestration engine for instant supply chain scenario analysis.",
   },
   {
-    icon: AlertTriangle,
-    title: "Risk Detection",
-    description: "Automatically identify vulnerabilities, concentration risks, and geopolitical exposure.",
+    icon: Globe,
+    title: "Global Node Mapping",
+    description: "Deep mapping of multi-tier supplier connections and geographical risk hotspots.",
   },
   {
     icon: Network,
-    title: "Network Mapping",
-    description: "Visualize complex supplier relationships and interdependencies with interactive graphs.",
+    title: "Autonomous Logistics",
+    description: "AI agents that proactively adjust routing and inventory based on streaming data.",
   },
   {
-    icon: TrendingUp,
-    title: "Impact Forecasting",
-    description: "Calculate financial exposure and recovery timelines for potential disruption scenarios.",
+    icon: Database,
+    title: "Quantum Forecasting",
+    description: "Precision analytics that predict disruptions weeks before they manifest.",
   },
   {
-    icon: BarChart3,
-    title: "Detailed Analytics",
-    description: "Access comprehensive reports with risk rankings, vulnerability assessments, and trends.",
+    icon: ShieldCheck,
+    title: "Protocol Enforcement",
+    description: "Smart contracts that automatically execute pre-approved risk mitigation strategies.",
   },
   {
-    icon: Shield,
-    title: "Mitigation Planning",
-    description: "Get AI-powered recommendations for supplier diversification and risk reduction strategies.",
+    icon: Fingerprint,
+    title: "Trust Verification",
+    description: "Blockchain-backed pedigree for total transparency across your supply chain.",
   },
 ];
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5 },
+  },
+};
+
+import { TerminalCard } from "@/components/landing/terminal-card";
+
 export function Features() {
   return (
-    <section className="py-20 px-6 bg-background">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">Powerful Features for Supply Chain Excellence</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to proactively manage supply chain risk and build resilience
-          </p>
-        </div>
+    <section id="features" className="py-20 sm:py-32 px-4 sm:px-6 bg-transparent relative overflow-hidden">
+      <div className="max-w-6xl mx-auto relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16 sm:mb-24 flex flex-col items-center gap-10"
+        >
+          <div className="flex flex-col gap-6">
+            <h2 className="text-4xl sm:text-5xl md:text-7xl font-black mb-4 tracking-tight px-4 leading-[1.1]">System <span className="text-gradient hover:scale-105 transition-transform inline-block">Capabilities</span></h2>
+            <p className="text-base sm:text-lg text-muted-foreground/50 max-w-2xl mx-auto font-medium px-4">
+              Advanced neural-orchestration for proactive supply chain resilience and risk mitigation.
+            </p>
+          </div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 10 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="hidden sm:block"
+          >
+            <TerminalCard />
+          </motion.div>
+        </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12"
+        >
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <div key={index} className="group rounded-lg border bg-card p-8 hover:border-primary/50 transition-colors">
-                <div className="mb-4 inline-flex p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                  <Icon className="w-6 h-6 text-primary" />
+              <motion.div
+                key={index}
+                variants={itemVariants}
+                style={{ transformStyle: "preserve-3d" }}
+                className="group flex flex-col items-start p-8 rounded-4xl bg-white/2 border border-white/5 backdrop-blur-3xl hover:bg-white/5 transition-all duration-700 hover:[transform:rotateY(10deg)_rotateX(-5deg)_translateZ(20px)] relative overflow-hidden"
+              >
+                {/* Neural Node Indicator in corner */}
+                <div className="absolute top-4 right-4 flex gap-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary/40 animate-pulse shadow-glow-purple" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-accent/40 animate-pulse delay-75 shadow-glow-cyan" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
-              </div>
+
+                <div className="mb-8 inline-flex p-5 rounded-2xl bg-linear-to-tr from-primary/10 to-accent/10 border border-white/5 group-hover:from-primary/20 group-hover:to-accent/20 transition-all duration-500 group-hover:scale-110 group-hover:[transform:translateZ(40px)]">
+                  <Icon className="w-8 h-8 text-primary/80 transition-colors group-hover:text-primary" />
+                </div>
+                <h3 className="text-2xl font-black mb-4 tracking-tighter group-hover:text-primary transition-colors group-hover:[transform:translateZ(30px)]">{feature.title}</h3>
+                <p className="text-muted-foreground/40 leading-relaxed font-bold text-sm tracking-tight group-hover:[transform:translateZ(20px)] transition-all delay-75 group-hover:text-muted-foreground/60">{feature.description}</p>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
       </div>
+
+      {/* Local background element removed as it's now in DynamicBackground */}
     </section>
   );
 }

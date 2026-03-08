@@ -1,8 +1,10 @@
 "use client";
 
 import { Recommendation, Supplier } from "@/lib/types";
-import { CheckCircle2, AlertCircle, Lightbulb } from "lucide-react";
+import { CheckCircle2, AlertCircle, Lightbulb, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 interface RecommendationsPanelProps {
@@ -14,120 +16,136 @@ export function RecommendationsPanel({ recommendations, suppliers }: Recommendat
   const getTypeIcon = (type: string) => {
     switch (type) {
       case "supplier-diversification":
-        return <AlertCircle className="w-4 h-4" />;
+        return <AlertCircle className="w-5 h-5 text-purple-400" />;
       case "inventory-reallocation":
-        return <Lightbulb className="w-4 h-4" />;
+        return <Lightbulb className="w-5 h-5 text-blue-400" />;
       case "route-optimization":
-        return <CheckCircle2 className="w-4 h-4" />;
+        return <CheckCircle2 className="w-5 h-5 text-green-400" />;
       case "contract-renegotiation":
-        return <AlertCircle className="w-4 h-4" />;
+        return <AlertCircle className="w-5 h-5 text-orange-400" />;
       default:
-        return <Lightbulb className="w-4 h-4" />;
+        return <Lightbulb className="w-5 h-5 text-primary" />;
     }
   };
 
-  const getTypeBadgeColor = (type: string) => {
-    switch (type) {
-      case "supplier-diversification":
-        return "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-200";
-      case "inventory-reallocation":
-        return "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200";
-      case "route-optimization":
-        return "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200";
-      case "contract-renegotiation":
-        return "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-200";
-      default:
-        return "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-200";
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
+  const getPriorityClasses = (priority: string) => {
     switch (priority) {
       case "high":
-        return "border-red-200 bg-red-50/50 dark:border-red-900 dark:bg-red-950/30";
+        return "border-red-500/20 bg-red-500/5 text-red-500";
       case "medium":
-        return "border-orange-200 bg-orange-50/50 dark:border-orange-900 dark:bg-orange-950/30";
+        return "border-orange-500/20 bg-orange-500/5 text-orange-500";
       case "low":
-        return "border-green-200 bg-green-50/50 dark:border-green-900 dark:bg-green-950/30";
+        return "border-green-500/20 bg-green-500/5 text-green-500";
       default:
-        return "border-gray-200";
+        return "border-white/5 bg-white/5 text-foreground";
     }
   };
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h3 className="font-semibold mb-4 flex items-center gap-2">
-          <Lightbulb className="w-4 h-4" />
-          Mitigation Recommendations
-        </h3>
-      </div>
+    <Card className="glass h-full">
+      <CardHeader className="border-b border-white/5 pb-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-accent/10">
+            <Lightbulb className="w-5 h-5 text-accent" />
+          </div>
+          <CardTitle className="text-lg font-bold tracking-tight">Mitigation Plan</CardTitle>
+        </div>
+      </CardHeader>
 
-      <div className="space-y-3">
-        {recommendations.slice(0, 5).map((rec) => {
-          const supplier = suppliers.find((s) => s.id === rec.affectedSupplierId);
+      <CardContent className="pt-6">
+        <div className="space-y-4">
+          <AnimatePresence>
+            {recommendations.slice(0, 4).map((rec, index) => {
+              const supplier = suppliers.find((s) => s.id === rec.affectedSupplierId);
 
-          return (
-            <div
-              key={rec.id}
-              className={cn(
-                "rounded-lg border-2 p-4 transition-colors",
-                getPriorityColor(rec.priority)
-              )}
-            >
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex items-start gap-2 flex-1">
-                  <div className="mt-1">{getTypeIcon(rec.type)}</div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h4 className="font-semibold text-sm">{rec.description}</h4>
-                      <span className={cn("px-2 py-0.5 rounded text-xs font-semibold", getTypeBadgeColor(rec.type))}>
-                        {rec.type.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")}
-                      </span>
+              return (
+                <motion.div
+                  key={rec.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className={cn(
+                    "group relative rounded-2xl border p-4 transition-all duration-300 hover:bg-white/5",
+                    getPriorityClasses(rec.priority)
+                  )}
+                >
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="p-2 rounded-xl bg-white/5 border border-white/10 mt-1">
+                      {getTypeIcon(rec.type)}
                     </div>
-                    {supplier && <p className="text-xs text-muted-foreground">{supplier.name}</p>}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <h4 className="font-bold text-sm tracking-tight text-foreground truncate group-hover:text-primary transition-colors">
+                          {rec.description}
+                        </h4>
+                        <span className="text-[10px] font-black uppercase tracking-tighter opacity-60">
+                          {rec.priority}
+                        </span>
+                      </div>
+                      {supplier && (
+                        <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
+                          {supplier.name}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <div className={cn("px-2 py-1 rounded text-xs font-semibold", {
-                  "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200": rec.priority === "high",
-                  "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-200": rec.priority === "medium",
-                  "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200": rec.priority === "low",
-                })}>
-                  {rec.priority.toUpperCase()}
-                </div>
-              </div>
 
-              <div className="grid grid-cols-3 gap-2 mb-3 text-xs">
-                <div>
-                  <span className="text-muted-foreground">Est. Cost</span>
-                  <p className="font-semibold">${(rec.estimatedCost / 1000000).toFixed(1)}M</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">Expected Mitigation</span>
-                  <p className="font-semibold text-green-600">{rec.expectedMitigation}%</p>
-                </div>
-                <div>
-                  <span className="text-muted-foreground">ROI</span>
-                  <p className="font-semibold">≈ {Math.round((rec.expectedMitigation * 3))}</p>
-                </div>
-              </div>
-
-              <div className="space-y-1 mb-3">
-                {rec.actionItems.slice(0, 2).map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-2 text-xs">
-                    <CheckCircle2 className="w-3 h-3 mt-0.5 flex-shrink-0 text-primary" />
-                    <span>{item}</span>
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="rounded-xl bg-white/3 border border-white/5 p-2.5">
+                      <span className="text-[9px] font-bold text-muted-foreground/40 uppercase block mb-1">Est. Cost</span>
+                      <p className="text-xs font-black text-foreground">${(rec.estimatedCost / 1000000).toFixed(1)}M</p>
+                    </div>
+                    <div className="rounded-xl bg-white/3 border border-white/5 p-2.5">
+                      <span className="text-[9px] font-bold text-muted-foreground/40 uppercase block mb-1">Impact Reduction</span>
+                      <p className="text-xs font-black text-accent">{rec.expectedMitigation}%</p>
+                    </div>
                   </div>
-                ))}
-              </div>
 
-              <Button size="sm" variant="outline" className="w-full text-xs">
-                View Details
-              </Button>
-            </div>
-          );
-        })}
-      </div>
-    </div>
+                  <div className="flex flex-col gap-2 relative z-10 transition-all duration-500 overflow-hidden">
+                    <div className="flex gap-2">
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="flex-1 h-10 rounded-xl bg-primary hover:bg-primary/90 font-black text-[9px] uppercase tracking-widest gap-2"
+                        onClick={() => alert(`Strategy Approved: ${rec.description}`)}
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        Approve
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-10 px-4 rounded-xl border-white/5 bg-white/3 hover:bg-white/5 font-black text-[9px] uppercase tracking-widest"
+                        onClick={() => alert(`RFQ Generated for ${supplier?.name}`)}
+                      >
+                        Generate RFQ
+                      </Button>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex-1 h-9 rounded-xl text-muted-foreground/40 hover:text-white hover:bg-white/5 font-black text-[8px] uppercase tracking-[0.2em]"
+                        onClick={() => alert(`Recommendation Ignored: ${rec.description}`)}
+                      >
+                        Ignore Risk
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-9 px-4 rounded-xl text-muted-foreground/40 hover:text-white hover:bg-white/5 font-black text-[8px] uppercase tracking-[0.2em]"
+                        onClick={() => alert(`Redirecting to manual editor for ${rec.id}`)}
+                      >
+                        Modify
+                      </Button>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

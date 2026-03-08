@@ -1,4 +1,7 @@
+"use client";
+
 import { CheckCircle2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 const useCases = [
   {
@@ -25,29 +28,44 @@ const useCases = [
 
 export function UseCases() {
   return (
-    <section className="py-20 px-6 bg-muted/30">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">Built for Your Use Cases</h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            SupplyGuard serves supply chain managers, procurement teams, and risk officers
+    <section id="network" className="py-20 sm:py-32 px-4 sm:px-6 bg-transparent relative overflow-hidden">
+      <div className="max-w-6xl mx-auto relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16 sm:mb-24"
+        >
+          <h2 className="text-3xl sm:text-4xl md:text-6xl font-black mb-6 tracking-tight px-4">Built for <span className="text-gradient">Strategic Entities</span></h2>
+          <p className="text-base sm:text-lg text-muted-foreground/60 max-w-2xl mx-auto font-medium px-4">
+            SupplyGuard serves the world's most complex supply chains with precision.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
           {useCases.map((useCase, index) => (
-            <div key={index} className="rounded-lg border bg-background p-8">
-              <h3 className="text-xl font-semibold mb-3">{useCase.title}</h3>
-              <p className="text-muted-foreground mb-6">{useCase.description}</p>
-              <div className="space-y-3">
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              className="group p-8 rounded-4xl bg-white/3 border border-white/5 backdrop-blur-md hover:bg-white/5 transition-all duration-500 hover:scale-[1.02]"
+            >
+              <h3 className="text-2xl font-bold mb-4 tracking-tight group-hover:text-primary transition-colors">{useCase.title}</h3>
+              <p className="text-muted-foreground/60 mb-8 font-medium leading-relaxed">{useCase.description}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {useCase.benefits.map((benefit, idx) => (
                   <div key={idx} className="flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />
-                    <span className="text-sm">{benefit}</span>
+                    <div className="p-1 rounded-full bg-primary/20">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                    </div>
+                    <span className="text-xs font-bold text-muted-foreground/80">{benefit}</span>
                   </div>
                 ))}
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
