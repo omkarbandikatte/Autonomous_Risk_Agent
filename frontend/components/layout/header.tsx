@@ -37,13 +37,13 @@ export function Header() {
         className={cn(
           "fixed top-0 z-[100] w-full transition-all duration-500",
           (isScrolled || !isHome)
-            ? "py-3 bg-black/40 backdrop-blur-xl border-b border-white/5 shadow-2xl"
-            : "py-6 bg-transparent"
+            ? "py-2 bg-black/40 backdrop-blur-xl border-b border-white/5 shadow-2xl"
+            : "py-3 bg-transparent"
         )}
       >
         <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 sm:px-12">
           <Link href="/" className="group">
-            <SupplyGuardLogo imageClassName="h-20 w-20" />
+            <SupplyGuardLogo imageClassName="h-12 w-12" />
           </Link>
 
           {/* Desktop Nav - Hidden on small screens */}
@@ -63,17 +63,17 @@ export function Header() {
           )}
 
           <div className="flex items-center gap-6">
-            <div className="hidden md:flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/5 backdrop-blur-md">
+            <div className="hidden md:flex items-center gap-3 px-3 py-1.5 rounded-full bg-white/5 border border-white/5 backdrop-blur-md">
               <div className="relative flex h-2 w-2">
                 <div className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></div>
                 <div className="relative inline-flex rounded-full h-2 w-2 bg-accent"></div>
               </div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-accent">Active Node</span>
+              <span className="text-[9px] font-black uppercase tracking-widest text-accent">Active Node</span>
             </div>
 
             {isHome && (
               <Link href="/dashboard" className="hidden sm:block">
-                <Button className="rounded-full px-8 font-black text-xs uppercase tracking-widest bg-primary hover:bg-primary/90 shadow-glow-purple/20">
+                <Button className="h-9 rounded-full px-6 font-black text-xs uppercase tracking-widest bg-primary hover:bg-primary/90 shadow-glow-purple/20">
                   Launch App
                 </Button>
               </Link>
