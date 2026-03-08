@@ -4,10 +4,11 @@ import { SupplyGuardLogo } from "@/components/ui/logo";
 
 const footerLinks = {
   Product: [
-    { label: "Features", href: "#" },
-    { label: "Pricing", href: "#" },
-    { label: "Security", href: "#" },
-    { label: "Roadmap", href: "#" },
+    { label: "Features", href: "#features" },
+    { label: "Network", href: "#network" },
+    { label: "Simulation", href: "#simulation" },
+    { label: "Analytics", href: "#analytics" },
+    { label: "Security", href: "#security" },
   ],
   Company: [
     { label: "About", href: "/about" },

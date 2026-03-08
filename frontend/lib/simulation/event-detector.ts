@@ -18,29 +18,52 @@ export class EventDetectorAgent {
   }): DisruptionEvent {
     this.eventId++;
 
-    const durationMap = {
+    // Randomize duration and impact based on severity with some variance
+    const baseDurations = {
       low: 7,
-      medium: 21,
-      high: 60,
-      critical: 120,
+      medium: 14,
+      high: 30,
+      critical: 60,
     };
 
-    const impactRadiusMap = {
+    const baseImpactRadii = {
       low: 1,
-      medium: 3,
-      high: 7,
-      critical: 15,
+      medium: 2,
+      high: 3,
+      critical: 5,
     };
+
+    // Add +/- 20% variance
+    const variance = 0.8 + Math.random() * 0.4;
+    const typeMultiplier = {
+      "natural-disaster": 1.2,
+      "political": 1.0,
+      "economic": 0.8,
+      "pandemic": 2.0,
+      "supply-constraint": 0.5,
+    }[config.type] || 1.0;
+
+    const duration = Math.round(baseDurations[config.severity] * variance * typeMultiplier);
+    const impactRadius = Math.round(baseImpactRadii[config.severity] * variance * (typeMultiplier > 1 ? 1.5 : 1));
+
+    // If no region or supplier is specified, pick a random region (or a random supplier)
+    let affectedRegion = config.affectedRegion;
+    let affectedSupplierId = config.affectedSupplierId;
+
+    if (!affectedRegion && !affectedSupplierId) {
+      const regions = ["China", "Taiwan", "USA", "Germany", "Vietnam", "Japan", "Mexico"];
+      affectedRegion = regions[Math.floor(Math.random() * regions.length)];
+    }
 
     return {
       id: `EVT-${Date.now()}-${this.eventId}`,
       type: config.type,
       severity: config.severity,
-      affectedRegion: config.affectedRegion,
-      affectedSupplierId: config.affectedSupplierId,
-      duration: durationMap[config.severity],
+      affectedRegion,
+      affectedSupplierId,
+      duration,
       timestamp: new Date(),
-      impactRadius: impactRadiusMap[config.severity],
+      impactRadius,
     };
   }
 

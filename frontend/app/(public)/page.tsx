@@ -6,6 +6,8 @@ import { CTASection } from "@/components/landing/cta-section";
 import { Footer } from "@/components/landing/footer";
 import { DynamicBackground } from "@/components/landing/dynamic-background";
 import { AgentStreams } from "@/components/landing/agent-streams";
+import { AnalyticsSection } from "@/components/landing/analytics-section";
+import { SecuritySection } from "@/components/landing/security-section";
 
 export default function LandingPage() {
   return (
@@ -14,8 +16,10 @@ export default function LandingPage() {
       <AgentStreams />
       <Hero />
       <Features />
+      <AnalyticsSection />
       <UseCases />
       <HowItWorks />
+      <SecuritySection />
       <CTASection />
       <Footer />
     </div>

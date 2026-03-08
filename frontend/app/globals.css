@@ -85,8 +85,16 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   * {
     @apply border-transparent outline-none;
+  }
+
+  section {
+    scroll-margin-top: 80px;
   }
 
   body {

@@ -2,9 +2,18 @@
 
 import { SimulationTimestep } from "@/lib/types";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { motion, AnimatePresence } from "framer-motion";
-import { Activity, BarChart3, TrendingUp } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { BarChart3, TrendingUp } from "lucide-react";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  ComposedChart,
+  Line,
+} from 'recharts';
 
 interface CascadingImpactViewProps {
   timeline: SimulationTimestep[];
@@ -12,109 +21,142 @@ interface CascadingImpactViewProps {
 }
 
 export function CascadingImpactView({ timeline, maxDays = 30 }: CascadingImpactViewProps) {
-  const displayTimeline = timeline.slice(0, maxDays);
-  const peakFailures = Math.max(...displayTimeline.map((t) => t.failedSuppliers.length), 0);
+  const displayTimeline = timeline.slice(0, maxDays).map(step => ({
+    ...step,
+    failures: step.failedSuppliers.length,
+    impactMd: parseFloat((step.cumulativeImpact / 1000000).toFixed(2)),
+    dayLabel: `Day ${step.day}`
+  }));
+
+  const peakFailures = Math.max(...displayTimeline.map((t) => t.failures), 0);
   const maxImpact = Math.max(...displayTimeline.map((t) => t.cumulativeImpact), 0);
-  const lastStep = displayTimeline[displayTimeline.length - 1];
 
   return (
-    <Card className="glass h-full flex flex-col">
+    <Card className="glass h-full flex flex-col overflow-hidden">
       <CardHeader className="border-b border-white/5 pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-accent/10">
+            <div className="p-2 rounded-xl bg-accent/20 border border-accent/20 shadow-glow-cyan/10">
               <BarChart3 className="w-5 h-5 text-accent" />
             </div>
-            <CardTitle className="text-lg font-bold tracking-tight">Impact Timeline</CardTitle>
+            <div>
+              <CardTitle className="text-lg font-black tracking-tight text-white">Impact Analytics</CardTitle>
+              <p className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest leading-none mt-1">Real-time cascading modeling</p>
+            </div>
           </div>
           <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-white/5 border border-white/10">
             <TrendingUp className="w-3 h-3 text-accent" />
-            <span className="text-[10px] font-black uppercase tracking-tighter text-foreground">Live Simulation</span>
+            <span className="text-[9px] font-black uppercase tracking-tighter text-foreground/80">Active Simulation</span>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="pt-8 space-y-10 flex-1">
-        {/* Timeline Chart */}
-        <div className="relative h-48 flex items-end gap-1.5 px-4 bg-white/3 rounded-2xl border border-white/5 overflow-hidden">
-          {displayTimeline.map((step, index) => {
-            const barHeightPercent = (step.failedSuppliers.length / (peakFailures || 1)) * 100;
-            const isCritical = step.failedSuppliers.length > 5;
-            const isMedium = step.failedSuppliers.length > 0 && !isCritical;
-
-            return (
-              <div
-                key={index}
-                className="group relative flex flex-col items-center flex-1 min-w-[12px]"
-              >
-                <motion.div
-                  initial={{ height: 0 }}
-                  animate={{ height: `${Math.max(barHeightPercent, 4)}%` }}
-                  transition={{ duration: 0.8, delay: index * 0.02, ease: "circOut" }}
-                  className={cn(
-                    "w-full rounded-t-sm transition-all duration-300",
-                    isCritical
-                      ? "bg-linear-to-t from-destructive to-red-400 shadow-glow-purple/20"
-                      : isMedium
-                        ? "bg-linear-to-t from-orange-400 to-yellow-300"
-                        : "bg-linear-to-t from-accent to-cyan-300"
-                  )}
-                />
-
-                {/* Tooltip on Hover */}
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50">
-                  <div className="bg-black/90 text-[10px] font-bold text-white px-2 py-1 rounded-lg whitespace-nowrap border border-white/10 shadow-2xl">
-                    Day {step.day}: {step.failedSuppliers.length} Failures
-                  </div>
-                </div>
-
-                {index % 7 === 0 && (
-                  <span className="absolute top-full mt-2 text-[9px] font-bold text-muted-foreground/40">D{step.day}</span>
-                )}
+      <CardContent className="pt-8 space-y-12 flex-1">
+        {/* Main Multi-Metric Graph */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between px-2">
+            <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Propagation & Financial Loss</h4>
+            <div className="flex gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-accent shadow-glow-cyan" />
+                <span className="text-[9px] font-bold text-muted-foreground/40 uppercase">Economic Loss ($M)</span>
               </div>
-            );
-          })}
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-destructive shadow-glow-purple" />
+                <span className="text-[9px] font-bold text-muted-foreground/40 uppercase">Failure Density</span>
+              </div>
+            </div>
+          </div>
 
-          {/* Grid lines */}
-          <div className="absolute inset-0 flex flex-col justify-between py-4 pointer-events-none opacity-10">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="w-full border-t border-dashed border-white" />
-            ))}
+          <div className="h-64 w-full bg-white/[0.02] rounded-3xl border border-white/5 p-4 backdrop-blur-sm">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={displayTimeline}>
+                <defs>
+                  <linearGradient id="colorImpact" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="var(--color-accent)" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="var(--color-accent)" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />
+                <XAxis
+                  dataKey="day"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 10, fontWeight: 800 }}
+                  interval={Math.floor(displayTimeline.length / 5)}
+                />
+                <YAxis yAxisId="left" hide />
+                <YAxis yAxisId="right" hide />
+                <Tooltip
+                  contentStyle={{ backgroundColor: 'rgba(0,0,0,0.9)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)', padding: '12px' }}
+                  itemStyle={{ fontSize: '11px', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '0.05em' }}
+                  labelStyle={{ color: 'rgba(255,255,255,0.4)', marginBottom: '8px', fontSize: '10px', fontWeight: '900' }}
+                />
+                <Area
+                  yAxisId="left"
+                  type="monotone"
+                  dataKey="impactMd"
+                  stroke="var(--color-accent)"
+                  strokeWidth={3}
+                  fillOpacity={1}
+                  fill="url(#colorImpact)"
+                  name="Loss ($M)"
+                />
+                <Line
+                  yAxisId="right"
+                  type="stepAfter"
+                  dataKey="failures"
+                  stroke="var(--color-destructive)"
+                  strokeWidth={2}
+                  dot={false}
+                  strokeDasharray="5 5"
+                  name="Failed Nodes"
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
         {/* Dynamic Stats Grid */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="rounded-2xl border border-white/5 bg-white/3 p-4 text-center group hover:bg-white/5 transition-colors">
-            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 mb-1">Peak Failures</p>
-            <p className="text-2xl font-black text-foreground tracking-tighter group-hover:text-destructive transition-colors">{peakFailures}</p>
+        <div className="grid grid-cols-3 gap-6">
+          <div className="rounded-3xl border border-white/5 bg-white/2 p-5 group hover:bg-white/5 transition-all duration-500 hover:scale-[1.02]">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30 mb-2">Maximum Disruption</p>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-black text-white tracking-tighter group-hover:text-destructive transition-colors">{peakFailures}</span>
+              <span className="text-[10px] font-bold text-muted-foreground/20 uppercase">Nodes</span>
+            </div>
           </div>
-          <div className="rounded-2xl border border-white/5 bg-white/3 p-4 text-center group hover:bg-white/5 transition-colors">
-            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 mb-1">Duration</p>
-            <p className="text-2xl font-black text-foreground tracking-tighter group-hover:text-primary transition-colors">{displayTimeline.length}d</p>
+          <div className="rounded-3xl border border-white/5 bg-white/2 p-5 group hover:bg-white/5 transition-all duration-500 hover:scale-[1.02]">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30 mb-2">Time Window</p>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-black text-white tracking-tighter group-hover:text-primary transition-colors">{displayTimeline.length}</span>
+              <span className="text-[10px] font-bold text-muted-foreground/20 uppercase">Days</span>
+            </div>
           </div>
-          <div className="rounded-2xl border border-white/5 bg-white/3 p-4 text-center group hover:bg-white/5 transition-colors">
-            <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 mb-1">Max Impact</p>
-            <p className="text-2xl font-black text-foreground tracking-tighter group-hover:text-accent transition-colors">
-              ${(maxImpact / 1000000).toFixed(0)}M
-            </p>
+          <div className="rounded-3xl border border-white/5 bg-white/2 p-5 group hover:bg-white/5 transition-all duration-500 hover:scale-[1.02]">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30 mb-2">Terminal Deficit</p>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-black text-white tracking-tighter group-hover:text-accent transition-colors">
+                ${(maxImpact / 1000000).toFixed(1)}
+              </span>
+              <span className="text-[10px] font-bold text-muted-foreground/20 uppercase">Million</span>
+            </div>
           </div>
         </div>
 
-        {/* Legend */}
-        <div className="flex items-center justify-center gap-6 pt-2">
-          <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-accent shadow-glow-cyan/20" />
-            <span className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground/60">Healthy</span>
+        {/* Legend / Status Labels */}
+        <div className="flex items-center justify-between pt-4 border-t border-white/5">
+          <div className="flex gap-8">
+            <div className="flex items-center gap-2 group cursor-help">
+              <div className="w-2 h-2 rounded-full bg-accent shadow-glow-cyan/40 animate-pulse" />
+              <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 group-hover:text-accent transition-colors">Predictive Stability</span>
+            </div>
+            <div className="flex items-center gap-2 group cursor-help">
+              <div className="w-2 h-2 rounded-full bg-destructive shadow-glow-purple/40" />
+              <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 group-hover:text-destructive transition-colors">Cascade Threshold</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-orange-400" />
-            <span className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground/60">At Risk</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-destructive shadow-glow-purple/20" />
-            <span className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground/60">Critical</span>
-          </div>
+          <p className="text-[9px] font-bold text-muted-foreground/20 uppercase tracking-[0.3em]">Dataset: Synthetic Risk v4.2</p>
         </div>
       </CardContent>
     </Card>

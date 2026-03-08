@@ -4,14 +4,21 @@ import { useState } from "react";
 import { NAVIGATION_ITEMS } from "@/lib/constants";
 import { SidebarMenuItem } from "./sidebar-menu-items";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Zap } from "lucide-react";
+import { ChevronLeft, Zap, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { SupplyGuardLogo } from "@/components/ui/logo";
+import { useRouter } from "next/navigation";
 
 export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const router = useRouter();
+
+  const handleLogout = () => {
+    // Implement logout logic here
+    router.push("/");
+  };
 
   return (
     <aside
@@ -66,10 +73,10 @@ export function Sidebar() {
       </nav>
 
       {/* Footer / Pro Badge - Dribbble Style */}
-      <div className="p-4">
+      <div className="p-4 space-y-4">
         <div
           className={cn(
-            "relative overflow-hidden rounded-2xl bg-linear-to-br from-primary/10 to-accent/10 p-4 transition-all duration-500",
+            "relative overflow-hidden rounded-2xl bg-linear-to-br from-primary/10 to-accent/10 transition-all duration-500",
             isCollapsed ? "p-2" : "p-4"
           )}
         >
@@ -96,6 +103,23 @@ export function Sidebar() {
           {/* Decorative background glow */}
           <div className="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-primary/20 blur-2xl" />
         </div>
+
+        {/* Logout Button */}
+        <Button
+          variant="ghost"
+          onClick={handleLogout}
+          className={cn(
+            "w-full flex items-center gap-3 px-3 py-6 rounded-2xl text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-all duration-300 relative group overflow-hidden",
+            isCollapsed ? "justify-center px-0" : "justify-start"
+          )}
+        >
+          <div className="relative z-10 flex h-6 w-6 items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12">
+            <LogOut className="h-5 w-5" />
+          </div>
+          {!isCollapsed && (
+            <span className="relative z-10 font-bold tracking-wide transition-all duration-300 group-hover:translate-x-1">Logout</span>
+          )}
+        </Button>
       </div>
     </aside >
   );
